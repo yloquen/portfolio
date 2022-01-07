@@ -20,19 +20,5 @@ export default function App()
     let menuPos = 0;
     let menuMaxPos = 3;
 
-    document.addEventListener('keydown', (e:KeyboardEvent) =>
-    {
-        // console.log(e.code);
-
-/*        if (e.code === 'ArrowUp' && menuPos < menuMaxPos)
-        {
-
-        }
-        else if (e.code === 'ArrowDown' && menuPos > 0)
-        {
-
-        }*/
-    });
-
     return <Menu/>
 }

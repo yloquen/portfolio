@@ -1,19 +1,23 @@
 import React from "react";
-import { TweenMax, Power3 } from "gsap";
-// const math = require('mathjs');
+import TweenMax from "gsap";
 
 import * as math from "mathjs";
+import MenuItem from "./MenuItem";
 
 
 type MenuState = {z:number}
 
-export default class Menu extends React.Component<undefined, MenuState>
+export default class Menu extends React.Component<{}, MenuState>
 {
-    private rotMatrix:math.Matrix;
+    private readonly rotMatrix:math.Matrix;
+    private readonly step:number;
 
     constructor(props:undefined)
     {
         super(props);
+
+        this.step = 400;
+
         this.state =
         {
             z:0
@@ -25,9 +29,13 @@ export default class Menu extends React.Component<undefined, MenuState>
         {
             TweenMax.killTweensOf(o);
 
-            const targetZ = Math.max(0, Math.min(2000, o.z + -1.5 * e.deltaY));
+            const sign = Math.sign(e.deltaY);
 
-            TweenMax.to(o, .5, {z:targetZ, onUpdate:() => { this.setState({z:o.z}); }})
+            const targetZ = Math.max(0, Math.min(5000, o.z - sign * this.step ));
+
+            const dur = (Math.abs(o.z - targetZ) * .5) / this.step;
+
+            TweenMax.to(o, dur, {z:targetZ, onUpdate:() => { this.setState({z:o.z}); }})
         });
 
         const angle = Math.PI * -.4;
@@ -47,27 +55,23 @@ export default class Menu extends React.Component<undefined, MenuState>
     {
         const itemsData =
         [
-            {},
-            {},
-            {},
-            {},
-            {},
-            {}
+            {},{},{},{},{},
+            {},{},{},{},{}
         ];
 
         const numItems = itemsData.length;
 
         const items = itemsData.map((itemData:any, index:number) =>
         {
-            const camPos = math.matrix([[0, -100, this.state.z]]);
+            const camPos = math.matrix([[0, -200, this.state.z]]);
 
-            const d = 50;
+            const d = 150;
 
-            const x = ((index%2)*2 - 1) * 900;
             const y = 0;
-            const z = 20 + index * 400;
+            const z = -250 + index * this.step;
+            const x = ((index % 2)*2 - 1) * (800);
 
-            let tempPos = math.matrix([[x,y,z]]);
+            let tempPos:any = math.matrix([[x,y,z]]);
             tempPos = math.subtract(tempPos, camPos);
             tempPos = math.multiply(tempPos, this.rotMatrix);
 
@@ -76,8 +80,8 @@ export default class Menu extends React.Component<undefined, MenuState>
             const xp = d * (tempPos.get([0,0]) / (zFinal + d));
             const yp = d * (tempPos.get([0,1]) / (zFinal + d));
 
-            const w = d * (900 / (zFinal + d));
-            const h = d * (600 / (zFinal + d));
+            const w = d * (1200 / (zFinal + d));
+            const h = d * (740 / (zFinal + d));
 
             const sw = window.innerWidth;
             const sh = window.innerHeight;
@@ -87,28 +91,35 @@ export default class Menu extends React.Component<undefined, MenuState>
                 position:"absolute",
                 width:w + "px",
                 height:h + "px",
-                backgroundColor:"#507090",
+                backgroundColor:"#6080a0",
                 left:(sw * .5) + xp + "px",
                 top:(sh * .5) + yp + "px",
                 transform:"translate(-50%,-50%)",
                 zIndex:-index
             };
 
-            if (zFinal < 100)
+            const cutoffZ = 100;
+            const cutoffBand = 100;
+            if (zFinal < cutoffZ)
             {
-                style.opacity = Math.max(0, zFinal/50 - 1);
-                if (zFinal < 50)
+                if (zFinal < cutoffZ - cutoffBand)
                 {
                     style.display = "none";
                 }
+                else
+                {
+                    style.opacity = Math.max(0, 1 - (cutoffZ - zFinal) / cutoffBand );
+                }
             }
 
-            if (zFinal > 400)
+            const farCutoff = 200;
+            const farCutoffBand = 1000;
+            if (zFinal > farCutoff)
             {
-                style.opacity = Math.max(0, 1 - (zFinal-400)/500);
+                style.opacity = Math.max(0, 1 - (zFinal-farCutoff)/1500);
             }
 
-            return <div style={style}/>;
+            return <MenuItem style={style}/>;
         });
 
         return (<div>
