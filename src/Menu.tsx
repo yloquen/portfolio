@@ -3,39 +3,58 @@ import TweenMax from "gsap";
 
 import * as math from "mathjs";
 import MenuItem from "./MenuItem";
+import Util from "./util/Util";
 
 
-type MenuState = {z:number}
+type MenuState = {z:number, activeProgress:number, targetZ:number}
 
 export default class Menu extends React.Component<{}, MenuState>
 {
     private readonly rotMatrix:math.Matrix;
     private readonly step:number;
+    private items:any[];
+    private activeIndex:number = -1;
+    private stateClone:MenuState;
+    private itemsData:any[];
 
     constructor(props:undefined)
     {
         super(props);
 
-        this.step = 400;
+        this.step = 400/10;
+
+        this.itemsData =
+        [
+            {},{},{},{},{},{},{},{},{},{}
+        ];
 
         this.state =
         {
-            z:0
+            z:0,
+            activeProgress:0,
+            targetZ:0
         };
 
-        const o = {z:0};
+        this.stateClone = {z:0, activeProgress:0, targetZ:0};
+
+        const maxZ = (this.itemsData.length-1) * this.step;
 
         window.addEventListener('wheel', (e:WheelEvent) =>
         {
-            TweenMax.killTweensOf(o);
+            TweenMax.killTweensOf(this.stateClone);
 
             const sign = Math.sign(e.deltaY);
+            this.stateClone.targetZ += - sign * this.step;
 
-            const targetZ = Math.max(0, Math.min(5000, o.z - sign * this.step ));
+            this.stateClone.targetZ = Util.clamp(this.stateClone.targetZ, 0, maxZ);
+            const dur = .5;//(Math.abs(this.stateClone.z - targetZ) * .5) / this.step;
 
-            const dur = (Math.abs(o.z - targetZ) * .5) / this.step;
+            if (this.activeIndex !== -1)
+            {
+                TweenMax.to({}, dur, {onComplete:() => { this.activeIndex = -1 }});
+            }
 
-            TweenMax.to(o, dur, {z:targetZ, onUpdate:() => { this.setState({z:o.z}); }})
+            TweenMax.to(this.stateClone, dur, {z:this.stateClone.targetZ, activeProgress:0, onUpdate:() => { this.setState(this.stateClone); }})
         });
 
         const angle = Math.PI * -.4;
@@ -53,23 +72,18 @@ export default class Menu extends React.Component<{}, MenuState>
 
     render()
     {
-        const itemsData =
-        [
-            {},{},{},{},{},
-            {},{},{},{},{}
-        ];
 
-        const numItems = itemsData.length;
+        const numItems = this.itemsData.length;
 
-        const items = itemsData.map((itemData:any, index:number) =>
+        this.items = this.itemsData.map((itemData:any, index:number) =>
         {
-            const camPos = math.matrix([[0, -200, this.state.z]]);
+            const camPos = math.matrix([[0, -20, this.state.z]]);
 
-            const d = 150;
+            const d = 17;
 
             const y = 0;
-            const z = -250 + index * this.step;
-            const x = ((index % 2)*2 - 1) * (800);
+            const z = -25 + index * this.step;
+            const x = ((index % 2)*2 - 1) * 75;
 
             let tempPos:any = math.matrix([[x,y,z]]);
             tempPos = math.subtract(tempPos, camPos);
@@ -80,26 +94,57 @@ export default class Menu extends React.Component<{}, MenuState>
             const xp = d * (tempPos.get([0,0]) / (zFinal + d));
             const yp = d * (tempPos.get([0,1]) / (zFinal + d));
 
-            const w = d * (1200 / (zFinal + d));
-            const h = d * (740 / (zFinal + d));
+            const wMenu = d * (120 / (zFinal + d));
+            const hMenu = d * (74 / (zFinal + d));
 
-            const sw = window.innerWidth;
-            const sh = window.innerHeight;
+            const screenCenterX = 50;
+            const screenCenterY = 50;
+
+            const xMenu = screenCenterX + xp;
+            const yMenu = screenCenterY + yp;
+
+            let xActive = xMenu;
+            let yActive = yMenu;
+
+            let wActive = wMenu;
+            let hActive = hMenu;
+
+            let zIndex = -index;
+
+            if (index === this.activeIndex)
+            {
+                xActive = screenCenterX;
+                yActive = screenCenterY;
+                wActive = 100;
+                hActive = 100;
+                zIndex = 1;
+            }
+
+            const oneMinusActProgress = (1 - this.state.activeProgress);
+
+            const xFinal = xActive + (-xActive + xMenu) * oneMinusActProgress;
+            const yFinal = yActive + (-yActive + yMenu) * oneMinusActProgress;
+
+            const wFinal = wActive + (-wActive + wMenu) * oneMinusActProgress;
+            const hFinal = hActive + (-hActive + hMenu) * oneMinusActProgress;
 
             const style:any =
             {
                 position:"absolute",
-                width:w + "px",
-                height:h + "px",
+                width:wFinal + "vw",
+                height:hFinal + "vw",
                 backgroundColor:"#6080a0",
-                left:(sw * .5) + xp + "px",
-                top:(sh * .5) + yp + "px",
+                left:xFinal + "%",
+                top:yFinal + "%",
                 transform:"translate(-50%,-50%)",
-                zIndex:-index
+                zIndex:zIndex
             };
 
-            const cutoffZ = 100;
-            const cutoffBand = 100;
+            const cutoffZ = 10;
+            const cutoffBand = 5;
+
+            let coverOpacity = 0;
+
             if (zFinal < cutoffZ)
             {
                 if (zFinal < cutoffZ - cutoffBand)
@@ -108,22 +153,48 @@ export default class Menu extends React.Component<{}, MenuState>
                 }
                 else
                 {
-                    style.opacity = Math.max(0, 1 - (cutoffZ - zFinal) / cutoffBand );
+                    coverOpacity = 1 - Math.max(0, 1 - (cutoffZ - zFinal) / cutoffBand );
                 }
             }
 
-            const farCutoff = 200;
-            const farCutoffBand = 1000;
+            const farCutoff = 20;
+            const farCutoffBand = 50;
             if (zFinal > farCutoff)
             {
-                style.opacity = Math.max(0, 1 - (zFinal-farCutoff)/1500);
+                coverOpacity = 1 - Math.max(0, 1 - (zFinal-farCutoff)/farCutoffBand);
             }
 
-            return <MenuItem style={style}/>;
+            return <MenuItem
+                style={style}
+                activeProgress={this.state.activeProgress}
+                index={index}
+                coverColor="#c0d3ff"
+                coverOpacity={coverOpacity}
+                onClickHandler={this.itemClickHandler.bind(this)}/>;
         });
 
-        return (<div>
-            {items}
+        const menuStyle =
+        {
+            maxWidth:"100%",
+            overflow:"hidden"
+        };
+
+        return (<div style={menuStyle}>
+            {this.items}
         </div>);
     }
+
+
+    itemClickHandler(index:number)
+    {
+        if (this.activeIndex === -1)
+        {
+            this.activeIndex = index;
+        }
+
+        TweenMax.killTweensOf(this.stateClone);
+        TweenMax.to(this.stateClone, .5, {activeProgress:1, onUpdate:() => { this.setState(this.stateClone); }});
+    }
+
+
 }
