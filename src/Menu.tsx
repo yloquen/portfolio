@@ -21,7 +21,7 @@ export default class Menu extends React.Component<{}, MenuState>
     {
         super(props);
 
-        this.step = 400/10;
+        this.step = 60;
 
         this.itemsData =
         [
@@ -39,6 +39,7 @@ export default class Menu extends React.Component<{}, MenuState>
 
         const maxZ = (this.itemsData.length-1) * this.step;
 
+        window.addEventListener('resize', () => this.setState(this.stateClone));
         window.addEventListener('wheel', (e:WheelEvent) =>
         {
             TweenMax.killTweensOf(this.stateClone);
@@ -82,8 +83,8 @@ export default class Menu extends React.Component<{}, MenuState>
             const d = 17;
 
             const y = 0;
-            const z = -25 + index * this.step;
-            const x = ((index % 2)*2 - 1) * 75;
+            const z = -10 + index * this.step;
+            const x = ((index % 2)*2 - 1) * 50;
 
             let tempPos:any = math.matrix([[x,y,z]]);
             tempPos = math.subtract(tempPos, camPos);
@@ -94,8 +95,8 @@ export default class Menu extends React.Component<{}, MenuState>
             const xp = d * (tempPos.get([0,0]) / (zFinal + d));
             const yp = d * (tempPos.get([0,1]) / (zFinal + d));
 
-            const wMenu = d * (120 / (zFinal + d));
-            const hMenu = d * (74 / (zFinal + d));
+            const wMenu = (d * (80 / (zFinal + d))) * 0.01 * window.innerWidth;
+            const hMenu = wMenu * .625;
 
             const screenCenterX = 50;
             const screenCenterY = 50;
@@ -115,8 +116,8 @@ export default class Menu extends React.Component<{}, MenuState>
             {
                 xActive = screenCenterX;
                 yActive = screenCenterY;
-                wActive = 100;
-                hActive = 100;
+                wActive = window.innerWidth;
+                hActive = window.innerHeight;
                 zIndex = 1;
             }
 
@@ -131,8 +132,8 @@ export default class Menu extends React.Component<{}, MenuState>
             const style:any =
             {
                 position:"absolute",
-                width:wFinal + "vw",
-                height:hFinal + "vw",
+                width:wFinal + "px",
+                height:hFinal + "px",
                 backgroundColor:"#6080a0",
                 left:xFinal + "%",
                 top:yFinal + "%",
@@ -158,7 +159,7 @@ export default class Menu extends React.Component<{}, MenuState>
             }
 
             const farCutoff = 20;
-            const farCutoffBand = 50;
+            const farCutoffBand = 80;
             if (zFinal > farCutoff)
             {
                 coverOpacity = 1 - Math.max(0, 1 - (zFinal-farCutoff)/farCutoffBand);
@@ -166,7 +167,7 @@ export default class Menu extends React.Component<{}, MenuState>
 
             return <MenuItem
                 style={style}
-                activeProgress={this.state.activeProgress}
+                activeProgress={index === this.activeIndex ? this.state.activeProgress : 0}
                 index={index}
                 coverColor="#c0d3ff"
                 coverOpacity={coverOpacity}
