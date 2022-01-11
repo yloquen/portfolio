@@ -23,9 +23,69 @@ export default class Menu extends React.Component<{}, MenuState>
 
         this.step = 60;
 
+        const infoTitles =
+        [
+            "Name",
+            "Description",
+            "Platforms",
+            "Role",
+            "Technologies"
+        ];
+
         this.itemsData =
         [
-            {},{},{},{},{},{},{},{},{},{}
+            {
+                thumbId:1,
+                video:"pigs_bricks.mp4",
+                infoTexts:
+                [
+                    "Pigs & Bricks",
+                    "2D Arcade Platforming Game",
+                    "Android, iOS",
+                    "Frontend programming, backend programming",
+                    "Actionscript 3, Starling, Spine, Java, SQL"
+                ],
+                infoTitles:infoTitles
+            },
+            {
+                thumbId:2,
+                video:"svara_new_1.mp4",
+                infoTexts:
+                [
+                    "VIP Svara",
+                    "Android, iOS, Web",
+                    "Multi-player Card Game",
+                    "Frontend programming",
+                    "Javascript, PIXI"
+                ],
+                infoTitles:infoTitles
+            },
+            {
+                thumbId:3,
+                video:"domain.mp4",
+                infoTexts:
+                [
+                    "Domain of the Black Stars",
+                    "Web",
+                    "Solitaire Card Game",
+                    "Frontend programming",
+                    "Typescript, PIXI"
+                ],
+                infoTitles:infoTitles
+            },
+            {
+                thumbId:1,
+                video:"pigs_bricks.mp4",
+                infoTexts:
+                [
+                    "Pigs & Bricks",
+                    "2D Arcade Platforming Game",
+                    "Frontend programming, backend programming",
+                    "Actionscript 3, Starling, Spine, Java, SQL"
+                ],
+                infoTitles:infoTitles
+            }
+
         ];
 
         this.state =
@@ -138,7 +198,8 @@ export default class Menu extends React.Component<{}, MenuState>
                 left:xFinal + "%",
                 top:yFinal + "%",
                 transform:"translate(-50%,-50%)",
-                zIndex:zIndex
+                zIndex:zIndex,
+                cursor:"pointer"
             };
 
             const cutoffZ = 10;
@@ -166,6 +227,7 @@ export default class Menu extends React.Component<{}, MenuState>
             }
 
             return <MenuItem
+                data={itemData}
                 style={style}
                 activeProgress={index === this.activeIndex ? this.state.activeProgress : 0}
                 index={index}
