@@ -1,4 +1,4 @@
-import React from "react";
+import React, {CSSProperties} from "react";
 import TweenMax from "gsap";
 
 import * as math from "mathjs";
@@ -16,6 +16,8 @@ export default class Menu extends React.Component<{}, MenuState>
     private activeIndex:number = -1;
     private stateClone:MenuState;
     private itemsData:any[];
+    private itemCovers:any[];
+    private maxZ:number;
 
     constructor(props:undefined)
     {
@@ -53,8 +55,8 @@ export default class Menu extends React.Component<{}, MenuState>
                 infoTexts:
                 [
                     "VIP Svara",
+                    "Online Card Game",
                     "Android, iOS, Web",
-                    "Multi-player Card Game",
                     "Frontend programming",
                     "Javascript, PIXI"
                 ],
@@ -66,19 +68,79 @@ export default class Menu extends React.Component<{}, MenuState>
                 infoTexts:
                 [
                     "Domain of the Black Stars",
-                    "Web",
                     "Solitaire Card Game",
+                    "Web",
                     "Frontend programming",
                     "Typescript, PIXI"
                 ],
                 infoTitles:infoTitles
             },
             {
+                thumbId:4,
+                infoTexts:
+                [
+                    "Ampslide",
+                    "Web presentation player",
+                    "Web",
+                    "Frontend programming",
+                    "React.js"
+                ],
+                infoTitles:infoTitles
+            },
+            {
                 thumbId:1,
-                video:"pigs_bricks.mp4",
                 infoTexts:
                 [
                     "Pigs & Bricks",
+                    "",
+                    "2D Arcade Platforming Game",
+                    "Frontend programming, backend programming",
+                    "Actionscript 3, Starling, Spine, Java, SQL"
+                ],
+                infoTitles:infoTitles
+            },
+            {
+                thumbId:1,
+                infoTexts:
+                [
+                    "Pigs & Bricks",
+                    "",
+                    "2D Arcade Platforming Game",
+                    "Frontend programming, backend programming",
+                    "Actionscript 3, Starling, Spine, Java, SQL"
+                ],
+                infoTitles:infoTitles
+            },
+            {
+                thumbId:1,
+                infoTexts:
+                [
+                    "Pigs & Bricks",
+                    "",
+                    "2D Arcade Platforming Game",
+                    "Frontend programming, backend programming",
+                    "Actionscript 3, Starling, Spine, Java, SQL"
+                ],
+                infoTitles:infoTitles
+            },
+            {
+                thumbId:1,
+                infoTexts:
+                [
+                    "Pigs & Bricks",
+                    "",
+                    "2D Arcade Platforming Game",
+                    "Frontend programming, backend programming",
+                    "Actionscript 3, Starling, Spine, Java, SQL"
+                ],
+                infoTitles:infoTitles
+            },
+            {
+                thumbId:1,
+                infoTexts:
+                [
+                    "Pigs & Bricks",
+                    "",
                     "2D Arcade Platforming Game",
                     "Frontend programming, backend programming",
                     "Actionscript 3, Starling, Spine, Java, SQL"
@@ -95,28 +157,9 @@ export default class Menu extends React.Component<{}, MenuState>
             targetZ:0
         };
 
+        this.maxZ = (this.itemsData.length-1) * this.step;
+
         this.stateClone = {z:0, activeProgress:0, targetZ:0};
-
-        const maxZ = (this.itemsData.length-1) * this.step;
-
-        window.addEventListener('resize', () => this.setState(this.stateClone));
-        window.addEventListener('wheel', (e:WheelEvent) =>
-        {
-            TweenMax.killTweensOf(this.stateClone);
-
-            const sign = Math.sign(e.deltaY);
-            this.stateClone.targetZ += - sign * this.step;
-
-            this.stateClone.targetZ = Util.clamp(this.stateClone.targetZ, 0, maxZ);
-            const dur = .5;//(Math.abs(this.stateClone.z - targetZ) * .5) / this.step;
-
-            if (this.activeIndex !== -1)
-            {
-                TweenMax.to({}, dur, {onComplete:() => { this.activeIndex = -1 }});
-            }
-
-            TweenMax.to(this.stateClone, dur, {z:this.stateClone.targetZ, activeProgress:0, onUpdate:() => { this.setState(this.stateClone); }})
-        });
 
         const angle = Math.PI * -.4;
         const sinT = Math.sin(angle);
@@ -128,6 +171,60 @@ export default class Menu extends React.Component<{}, MenuState>
             [0,sinT,cosT]
         ]);
 
+        this.setupEvents();
+    }
+
+
+    setupEvents()
+    {
+        window.addEventListener('resize', () => this.setState(this.stateClone));
+        window.addEventListener('wheel', (e:WheelEvent) =>
+        {
+            TweenMax.killTweensOf(this.stateClone);
+
+            const sign = Math.sign(e.deltaY);
+            this.scrollTo(this.stateClone.targetZ - sign * this.step);
+        });
+
+        let startTouch:undefined|Touch;
+        let listener;
+        window.addEventListener('touchstart', (e:TouchEvent) =>
+        {
+            if (startTouch)
+            {
+                return;
+            }
+            startTouch = e.changedTouches[0];
+            window.addEventListener('touchmove', touchMoveHandler);
+        });
+
+        window.addEventListener('touchend', (e:TouchEvent) =>
+        {
+            startTouch = undefined;
+            window.removeEventListener('touchmove', touchMoveHandler);
+        });
+
+        const touchMoveHandler = (e:TouchEvent) =>
+        {
+            const d = Math.round((startTouch.clientY - e.changedTouches[0].clientY) * 10 / window.innerHeight);
+            this.scrollTo(d * this.step);
+            console.log(d);
+        };
+    }
+
+
+    scrollTo(newTargetZ:number)
+    {
+        this.stateClone.targetZ = Util.clamp(newTargetZ, 0, this.maxZ);
+
+        const dur = .5;//(Math.abs(this.stateClone.z - targetZ) * .5) / this.step;
+
+        if (this.activeIndex !== -1)
+        {
+            TweenMax.to({}, dur, {onComplete:() => { this.activeIndex = -1 }});
+        }
+
+        TweenMax.to(this.stateClone, dur, {z:this.stateClone.targetZ, activeProgress:0, onUpdate:() => { this.setState(this.stateClone); }});
     }
 
 
@@ -135,16 +232,18 @@ export default class Menu extends React.Component<{}, MenuState>
     {
 
         const numItems = this.itemsData.length;
-
-        this.items = this.itemsData.map((itemData:any, index:number) =>
+        this.items = [];
+        this.itemCovers = [];
+        for (let itemIdx=0; itemIdx < this.itemsData.length; itemIdx++)
         {
+            const itemData = this.itemsData[itemIdx];
             const camPos = math.matrix([[0, -20, this.state.z]]);
 
             const d = 17;
 
             const y = 0;
-            const z = -10 + index * this.step;
-            const x = ((index % 2)*2 - 1) * 50;
+            const z = -10 + itemIdx * this.step;
+            const x = ((itemIdx % 2)*2 - 1) * 50;
 
             let tempPos:any = math.matrix([[x,y,z]]);
             tempPos = math.subtract(tempPos, camPos);
@@ -156,7 +255,7 @@ export default class Menu extends React.Component<{}, MenuState>
             const yp = d * (tempPos.get([0,1]) / (zFinal + d));
 
             const wMenu = (d * (80 / (zFinal + d))) * 0.01 * window.innerWidth;
-            const hMenu = wMenu * .625;
+            const hMenu = wMenu * .585;
 
             const screenCenterX = 50;
             const screenCenterY = 50;
@@ -170,9 +269,9 @@ export default class Menu extends React.Component<{}, MenuState>
             let wActive = wMenu;
             let hActive = hMenu;
 
-            let zIndex = -index;
+            let zIndex = -itemIdx;
 
-            if (index === this.activeIndex)
+            if (itemIdx === this.activeIndex)
             {
                 xActive = screenCenterX;
                 yActive = screenCenterY;
@@ -192,9 +291,9 @@ export default class Menu extends React.Component<{}, MenuState>
             const style:any =
             {
                 position:"absolute",
-                width:wFinal + "px",
-                height:hFinal + "px",
-                backgroundColor:"#6080a0",
+                width:wFinal,
+                height:hFinal,
+                backgroundColor:"#1a3470",
                 left:xFinal + "%",
                 top:yFinal + "%",
                 transform:"translate(-50%,-50%)",
@@ -226,15 +325,39 @@ export default class Menu extends React.Component<{}, MenuState>
                 coverOpacity = 1 - Math.max(0, 1 - (zFinal-farCutoff)/farCutoffBand);
             }
 
-            return <MenuItem
+            const item = <MenuItem
+                key={itemIdx}
                 data={itemData}
                 style={style}
-                activeProgress={index === this.activeIndex ? this.state.activeProgress : 0}
-                index={index}
-                coverColor="#c0d3ff"
-                coverOpacity={coverOpacity}
+                activeProgress={itemIdx === this.activeIndex ? this.state.activeProgress : 0}
+                index={itemIdx}
                 onClickHandler={this.itemClickHandler.bind(this)}/>;
-        });
+
+            this.items.push(item);
+
+
+            if (itemIdx === this.activeIndex)
+            {
+                coverOpacity *= (1 - this.state.activeProgress);
+            }
+
+            const coverStyle:CSSProperties =
+            {
+                position:"absolute",
+                width:wFinal + "px",
+                height:hFinal + "px",
+                backgroundColor:"#12295e",
+                left:xFinal + "%",
+                top:yFinal + "%",
+                transform:"translate(-50%,-50%)",
+                opacity:coverOpacity,
+                zIndex:zIndex,
+                pointerEvents:"none"
+            };
+
+            const cover = <div style={coverStyle} key={itemIdx}/>
+            this.itemCovers.push(cover);
+        }
 
         const menuStyle =
         {
@@ -244,6 +367,7 @@ export default class Menu extends React.Component<{}, MenuState>
 
         return (<div style={menuStyle}>
             {this.items}
+            {this.itemCovers}
         </div>);
     }
 
@@ -253,10 +377,15 @@ export default class Menu extends React.Component<{}, MenuState>
         if (this.activeIndex === -1)
         {
             this.activeIndex = index;
+            TweenMax.killTweensOf(this.stateClone);
+            TweenMax.to(this.stateClone, .5, {activeProgress:1, onUpdate:() => { this.setState(this.stateClone); }});
         }
-
-        TweenMax.killTweensOf(this.stateClone);
-        TweenMax.to(this.stateClone, .5, {activeProgress:1, onUpdate:() => { this.setState(this.stateClone); }});
+        else
+        {
+            const dur = .5;
+            TweenMax.to({}, dur, {onComplete:() => { this.activeIndex = -1 }});
+            TweenMax.to(this.stateClone, dur, {z:this.stateClone.targetZ, activeProgress:0, onUpdate:() => { this.setState(this.stateClone); }})
+        }
     }
 
 

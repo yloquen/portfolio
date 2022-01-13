@@ -7,8 +7,6 @@ type MenuParams =
     style:any,
     index:number,
     activeProgress:number,
-    coverColor:string,
-    coverOpacity:number,
     onClickHandler:Function
 };
 
@@ -35,58 +33,50 @@ export default class MenuItem extends React.Component<MenuParams, undefined>
 
     render()
     {
-        const opacity = this.props.coverOpacity * (1 - this.props.activeProgress);
-        const coverStyle:CSSProperties =
-        {
-            position:"absolute",
-            top:"-1%",
-            left:"-1%",
-            width:"102%",
-            height:"102%",
-            backgroundColor:this.props.coverColor,
-            opacity:opacity,
-            zIndex:1,
-            pointerEvents:"none"
-        };
+        let imgHeight = Math.min(this.props.style.height * (1 - this.props.activeProgress * .3), this.props.style.width * .5625) *.92;
+        let imgWidth = imgHeight * 1.7778;
 
-        const imgWidth = 92 - this.props.activeProgress * 40;
+        const offsetPercent = this.props.activeProgress * 10;
+
         const imgStyle:CSSProperties =
         {
             position:"absolute",
-            width:imgWidth + "%",
-            top:"50%",
+            top:(50 - offsetPercent) + "%",
             left:"50%",
             transform:"translate(-50%,-50%)",
-            zIndex:0
+            zIndex:0,
+            height:imgHeight
         };
 
-        const infoY = window.innerHeight * .5 - window.innerWidth * .22;
+        const fontSize = Math.min(22, Math.min(window.innerHeight * .03, window.innerWidth * .03));
 
         const infoContainerStyle:CSSProperties =
         {
             position:"absolute",
-            top:infoY + "px",
-            left:"24%",
-            opacity:Util.clamp((this.props.activeProgress-0.9) * 10, 0, 1),
+            left:"50%",
+            top:this.props.style.height * (.5 - offsetPercent * .01) + .5 * imgHeight,
+            opacity:Util.clamp((this.props.activeProgress-0.95) * 20, 0, 1),
             color:"#ffffff",
             fontWeight:300,
-            fontSize:"0.8rem",
-            display:"flex",
-            flexDirection:"row",
-            width:imgWidth + "%"
+            fontSize:fontSize,
+            transform:"translate(-50%, 0%)",
+            pointerEvents:"none"
         };
 
         const showVideo = this.props.activeProgress === 1;
         const thumbSrc = "./img/thumb_" + this.props.data.thumbId + ".png";
 
-        let video =
-            <video ref={this.videoRef}
-                   style={imgStyle}
-                   poster={thumbSrc}
-                   src={"./video/" + this.props.data.video}
-                   controls={showVideo}/>;
-
-        video = showVideo ? video : undefined;
+        let video;
+        if (this.props.data.video && showVideo)
+        {
+            video = <video ref={this.videoRef}
+                style={imgStyle}
+                poster={thumbSrc}
+                src={"./video/" + this.props.data.video}
+                controls={showVideo}
+                onClick={this.onVideoClick.bind(this)}
+            />;
+        }
 
         const thumb = <img src={thumbSrc} style={imgStyle}/>;
 
@@ -95,22 +85,34 @@ export default class MenuItem extends React.Component<MenuParams, undefined>
             this.video.pause();
         }
 
-        const infoTitleStyle = { marginBottom:"0.1rem", marginRight:"0.2rem"};
-        const infoTextStyle = { marginBottom:"0.1rem"};
-
-        const infoTitles = this.props.data.infoTitles.map((t:any) => { return <div style={infoTitleStyle}>{t}</div> });
-        const infoTexts = this.props.data.infoTexts.map((t:any) => { return <div style={infoTextStyle}>{t}</div> });
+        const infoTable = <table style={{width:imgWidth, background: "linear-gradient(180deg, rgba(10,20,30,0.6) 0%, rgba(10,20,30,0) 100%)"}}>
+            <tbody>
+            {
+                this.props.data.infoTitles.map((t:any, index:number) =>
+                {
+                    return (<tr style={{paddingTop:fontSize}} key={index}>
+                        <td style={{color:"#ffdd70", width:"20%", verticalAlign:"top"}}>{this.props.data.infoTitles[index]}</td>
+                        <td style={{paddingLeft:fontSize, width:"80%"}}>{this.props.data.infoTexts[index]}</td>
+                    </tr>);
+                })
+            }
+            </tbody>
+        </table>;
 
         return (
             <div style={this.props.style} onClick={() => this.props.onClickHandler(this.props.index)}>
-                {<div style={coverStyle}/>}
                 {thumb}
                 {video}
                 <div style={infoContainerStyle}>
-                    <div style={infoTitleStyle}>{infoTitles}</div>
-                    <div style={infoTextStyle}>{infoTexts}</div>
+                    {infoTable}
                 </div>
             </div>);
+    }
+
+
+    onVideoClick(e:Event)
+    {
+        e.stopPropagation();
     }
 
 
