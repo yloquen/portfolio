@@ -12,7 +12,7 @@ type MenuParams =
 
 export default class MenuItem extends React.Component<MenuParams, undefined>
 {
-    private videoRef:React.RefObject<HTMLVideoElement>;
+    private readonly videoRef:React.RefObject<HTMLVideoElement>;
     private video:HTMLVideoElement;
 
     constructor(props:undefined)
@@ -26,14 +26,16 @@ export default class MenuItem extends React.Component<MenuParams, undefined>
         this.videoRef = React.createRef();
     }
 
+
     componentDidMount():void
     {
         this.video = this.videoRef.current;
     }
 
+
     render()
     {
-        let imgHeight = Math.min(this.props.style.height * (1 - this.props.activeProgress * .3), this.props.style.width * .5625) *.92;
+        let imgHeight = Math.min(this.props.style.height * (1 - this.props.activeProgress * .3), this.props.style.width * .5625) *.94;
         let imgWidth = imgHeight * 1.7778;
 
         const offsetPercent = this.props.activeProgress * 10;

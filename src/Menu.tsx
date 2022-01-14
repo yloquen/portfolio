@@ -14,16 +14,19 @@ export default class Menu extends React.Component<{}, MenuState>
     private readonly step:number;
     private items:any[];
     private activeIndex:number = -1;
-    private stateClone:MenuState;
-    private itemsData:any[];
+    private readonly stateClone:MenuState;
+    private readonly itemsData:any[];
     private itemCovers:any[];
-    private maxZ:number;
+    private readonly maxZ:number;
+    private readonly moveDuration:number;
 
     constructor(props:undefined)
     {
         super(props);
 
         this.step = 60;
+
+        this.moveDuration = .35;
 
         const infoTitles =
         [
@@ -187,7 +190,8 @@ export default class Menu extends React.Component<{}, MenuState>
         });
 
         let startTouch:undefined|Touch;
-        let listener;
+        let startTargetZ:number;
+
         window.addEventListener('touchstart', (e:TouchEvent) =>
         {
             if (startTouch)
@@ -195,6 +199,7 @@ export default class Menu extends React.Component<{}, MenuState>
                 return;
             }
             startTouch = e.changedTouches[0];
+            startTargetZ = this.stateClone.targetZ;
             window.addEventListener('touchmove', touchMoveHandler);
         });
 
@@ -207,8 +212,7 @@ export default class Menu extends React.Component<{}, MenuState>
         const touchMoveHandler = (e:TouchEvent) =>
         {
             const d = Math.round((startTouch.clientY - e.changedTouches[0].clientY) * 10 / window.innerHeight);
-            this.scrollTo(d * this.step);
-            console.log(d);
+            this.scrollTo(startTargetZ - d * this.step);
         };
     }
 
@@ -217,21 +221,18 @@ export default class Menu extends React.Component<{}, MenuState>
     {
         this.stateClone.targetZ = Util.clamp(newTargetZ, 0, this.maxZ);
 
-        const dur = .5;//(Math.abs(this.stateClone.z - targetZ) * .5) / this.step;
-
         if (this.activeIndex !== -1)
         {
-            TweenMax.to({}, dur, {onComplete:() => { this.activeIndex = -1 }});
+            TweenMax.to({}, this.moveDuration, {onComplete:() => { this.activeIndex = -1 }});
         }
 
-        TweenMax.to(this.stateClone, dur, {z:this.stateClone.targetZ, activeProgress:0, onUpdate:() => { this.setState(this.stateClone); }});
+        TweenMax.to(this.stateClone, this.moveDuration,
+            {z:this.stateClone.targetZ, activeProgress:0, onUpdate:() => { this.setState(this.stateClone); }});
     }
 
 
     render()
     {
-
-        const numItems = this.itemsData.length;
         this.items = [];
         this.itemCovers = [];
         for (let itemIdx=0; itemIdx < this.itemsData.length; itemIdx++)
@@ -255,7 +256,7 @@ export default class Menu extends React.Component<{}, MenuState>
             const yp = d * (tempPos.get([0,1]) / (zFinal + d));
 
             const wMenu = (d * (80 / (zFinal + d))) * 0.01 * window.innerWidth;
-            const hMenu = wMenu * .585;
+            const hMenu = wMenu * .59;
 
             const screenCenterX = 50;
             const screenCenterY = 50;
@@ -288,12 +289,14 @@ export default class Menu extends React.Component<{}, MenuState>
             const wFinal = wActive + (-wActive + wMenu) * oneMinusActProgress;
             const hFinal = hActive + (-hActive + hMenu) * oneMinusActProgress;
 
-            const style:any =
+            const menuItemStyle:any =
             {
                 position:"absolute",
                 width:wFinal,
                 height:hFinal,
-                backgroundColor:"#1a3470",
+                backgroundColor:"#14295e",
+                // border:"1px solid #ffffff20",
+                background:"linear-gradient(0deg, #7d2e61 0%, #1c294a 100%)",
                 left:xFinal + "%",
                 top:yFinal + "%",
                 transform:"translate(-50%,-50%)",
@@ -310,7 +313,7 @@ export default class Menu extends React.Component<{}, MenuState>
             {
                 if (zFinal < cutoffZ - cutoffBand)
                 {
-                    style.display = "none";
+                    menuItemStyle.display = "none";
                 }
                 else
                 {
@@ -328,7 +331,7 @@ export default class Menu extends React.Component<{}, MenuState>
             const item = <MenuItem
                 key={itemIdx}
                 data={itemData}
-                style={style}
+                style={menuItemStyle}
                 activeProgress={itemIdx === this.activeIndex ? this.state.activeProgress : 0}
                 index={itemIdx}
                 onClickHandler={this.itemClickHandler.bind(this)}/>;
@@ -359,13 +362,7 @@ export default class Menu extends React.Component<{}, MenuState>
             this.itemCovers.push(cover);
         }
 
-        const menuStyle =
-        {
-            maxWidth:"100%",
-            overflow:"hidden"
-        };
-
-        return (<div style={menuStyle}>
+        return (<div style={{ overflow:"hidden" }}>
             {this.items}
             {this.itemCovers}
         </div>);
@@ -378,13 +375,14 @@ export default class Menu extends React.Component<{}, MenuState>
         {
             this.activeIndex = index;
             TweenMax.killTweensOf(this.stateClone);
-            TweenMax.to(this.stateClone, .5, {activeProgress:1, onUpdate:() => { this.setState(this.stateClone); }});
+            TweenMax.to(this.stateClone, this.moveDuration,
+                {activeProgress:1, onUpdate:() => { this.setState(this.stateClone); }});
         }
         else
         {
-            const dur = .5;
-            TweenMax.to({}, dur, {onComplete:() => { this.activeIndex = -1 }});
-            TweenMax.to(this.stateClone, dur, {z:this.stateClone.targetZ, activeProgress:0, onUpdate:() => { this.setState(this.stateClone); }})
+            TweenMax.to({}, this.moveDuration, {onComplete:() => { this.activeIndex = -1 }});
+            TweenMax.to(this.stateClone, this.moveDuration,
+                {z:this.stateClone.targetZ, activeProgress:0, onUpdate:() => { this.setState(this.stateClone); }})
         }
     }
 
