@@ -5,10 +5,10 @@ import * as math from "mathjs";
 import MenuItem from "./MenuItem";
 import Util from "./util/Util";
 
+type MenuProps = {scrollCallback:Function}
+type MenuState = {z:number, activeProgress:number, targetZ:number,}
 
-type MenuState = {z:number, activeProgress:number, targetZ:number}
-
-export default class Menu extends React.Component<{}, MenuState>
+export default class Menu extends React.Component<MenuProps, MenuState>
 {
     private readonly rotMatrix:math.Matrix;
     private readonly step:number;
@@ -19,14 +19,15 @@ export default class Menu extends React.Component<{}, MenuState>
     private itemCovers:any[];
     private readonly maxZ:number;
     private readonly moveDuration:number;
+    private scrollCallback:Function;
 
     constructor(props:undefined)
     {
         super(props);
 
         this.step = 60;
-
         this.moveDuration = .35;
+        this.scrollCallback = this.props.scrollCallback;
 
         const infoTitles =
         [
@@ -48,7 +49,7 @@ export default class Menu extends React.Component<{}, MenuState>
                     "2D Arcade Platforming Game",
                     "Android, iOS",
                     "Frontend programming, backend programming",
-                    "Actionscript 3, Starling, Spine, Java, SQL"
+                    "Adobe AIR, Actionscript 3, Starling, Spine, Java, SQL"
                 ],
                 infoTitles:infoTitles
             },
@@ -95,8 +96,8 @@ export default class Menu extends React.Component<{}, MenuState>
                 infoTexts:
                 [
                     "Pigs & Bricks",
-                    "",
                     "2D Arcade Platforming Game",
+                    "",
                     "Frontend programming, backend programming",
                     "Actionscript 3, Starling, Spine, Java, SQL"
                 ],
@@ -107,8 +108,8 @@ export default class Menu extends React.Component<{}, MenuState>
                 infoTexts:
                 [
                     "Pigs & Bricks",
-                    "",
                     "2D Arcade Platforming Game",
+                    "",
                     "Frontend programming, backend programming",
                     "Actionscript 3, Starling, Spine, Java, SQL"
                 ],
@@ -119,8 +120,8 @@ export default class Menu extends React.Component<{}, MenuState>
                 infoTexts:
                 [
                     "Pigs & Bricks",
-                    "",
                     "2D Arcade Platforming Game",
+                    "",
                     "Frontend programming, backend programming",
                     "Actionscript 3, Starling, Spine, Java, SQL"
                 ],
@@ -131,8 +132,8 @@ export default class Menu extends React.Component<{}, MenuState>
                 infoTexts:
                 [
                     "Pigs & Bricks",
-                    "",
                     "2D Arcade Platforming Game",
+                    "",
                     "Frontend programming, backend programming",
                     "Actionscript 3, Starling, Spine, Java, SQL"
                 ],
@@ -143,14 +144,13 @@ export default class Menu extends React.Component<{}, MenuState>
                 infoTexts:
                 [
                     "Pigs & Bricks",
-                    "",
                     "2D Arcade Platforming Game",
+                    "",
                     "Frontend programming, backend programming",
                     "Actionscript 3, Starling, Spine, Java, SQL"
                 ],
                 infoTitles:infoTitles
             }
-
         ];
 
         this.state =
@@ -219,13 +219,22 @@ export default class Menu extends React.Component<{}, MenuState>
 
     scrollTo(newTargetZ:number)
     {
-        this.stateClone.targetZ = Util.clamp(newTargetZ, 0, this.maxZ);
+        newTargetZ = Util.clamp(newTargetZ, 0, this.maxZ);
+
+        this.stateClone.targetZ = newTargetZ;
+
+        if (this.scrollCallback)
+        {
+            this.scrollCallback(true);
+            this.scrollCallback = undefined;
+        }
 
         if (this.activeIndex !== -1)
         {
             TweenMax.to({}, this.moveDuration, {onComplete:() => { this.activeIndex = -1 }});
         }
 
+        TweenMax.killTweensOf(this.stateClone);
         TweenMax.to(this.stateClone, this.moveDuration,
             {z:this.stateClone.targetZ, activeProgress:0, onUpdate:() => { this.setState(this.stateClone); }});
     }

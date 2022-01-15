@@ -35,7 +35,8 @@ export default class MenuItem extends React.Component<MenuParams, undefined>
 
     render()
     {
-        let imgHeight = Math.min(this.props.style.height * (1 - this.props.activeProgress * .3), this.props.style.width * .5625) *.94;
+        const style = this.props.style;
+        let imgHeight = Math.min(style.height * (1 - this.props.activeProgress * .3), style.width * .5625) *.94;
         let imgWidth = imgHeight * 1.7778;
 
         const offsetPercent = this.props.activeProgress * 10;
@@ -52,19 +53,6 @@ export default class MenuItem extends React.Component<MenuParams, undefined>
 
         const fontSize = Math.min(22, Math.min(window.innerHeight * .03, window.innerWidth * .03));
 
-        const infoContainerStyle:CSSProperties =
-        {
-            position:"absolute",
-            left:"50%",
-            top:this.props.style.height * (.5 - offsetPercent * .01) + .5 * imgHeight,
-            opacity:Util.clamp((this.props.activeProgress-0.95) * 20, 0, 1),
-            color:"#ffffff",
-            fontWeight:300,
-            fontSize:fontSize,
-            transform:"translate(-50%, 0%)",
-            pointerEvents:"none"
-        };
-
         const showVideo = this.props.activeProgress === 1;
         const thumbSrc = "./img/thumb_" + this.props.data.thumbId + ".png";
 
@@ -79,16 +67,33 @@ export default class MenuItem extends React.Component<MenuParams, undefined>
                 onClick={this.onVideoClick.bind(this)}
             />;
         }
-
-        const thumb = <img src={thumbSrc} style={imgStyle}/>;
-
         if (this.video && !showVideo && !this.video.paused)
         {
             this.video.pause();
         }
 
-        const infoTable = <table style={{width:imgWidth, background: "linear-gradient(180deg, rgba(10,20,30,0.6) 0%, rgba(10,20,30,0) 100%)"}}>
-            <tbody>
+        const infoContainerStyle:CSSProperties =
+        {
+            position:"absolute",
+            left:"50%",
+            top:style.height * (.5 - offsetPercent * .01) + .5 * imgHeight,
+            opacity:Util.clamp((this.props.activeProgress-0.95) * 20, 0, 1),
+            color:"#ffffff",
+            fontWeight:300,
+            fontSize:fontSize,
+            transform:"translate(-50%, 0%)",
+            pointerEvents:"none"
+        };
+
+        const tableStyle =
+        {
+            paddingTop:(fontSize * .5) + "px",
+            width:imgWidth,
+            background: "linear-gradient(180deg, rgba(10,20,30,0.6) 0%, rgba(10,20,30,0) 100%)"
+        };
+
+        const infoTable = <table style={tableStyle}>
+            <tbody style={{}}>
             {
                 this.props.data.infoTitles.map((t:any, index:number) =>
                 {
@@ -102,8 +107,8 @@ export default class MenuItem extends React.Component<MenuParams, undefined>
         </table>;
 
         return (
-            <div style={this.props.style} onClick={() => this.props.onClickHandler(this.props.index)}>
-                {thumb}
+            <div style={style} onClick={() => this.props.onClickHandler(this.props.index)}>
+                {<img alt="n.a." src={thumbSrc} style={imgStyle}/>}
                 {video}
                 <div style={infoContainerStyle}>
                     {infoTable}
