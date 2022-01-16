@@ -4,6 +4,7 @@ import TweenMax from "gsap";
 import * as math from "mathjs";
 import MenuItem from "./MenuItem";
 import Util from "./util/Util";
+import {MenuData} from "./MenuData";
 
 type MenuProps = {scrollCallback:Function}
 type MenuState = {z:number, activeProgress:number, targetZ:number,}
@@ -15,7 +16,6 @@ export default class Menu extends React.Component<MenuProps, MenuState>
     private items:any[];
     private activeIndex:number = -1;
     private readonly stateClone:MenuState;
-    private readonly itemsData:any[];
     private itemCovers:any[];
     private readonly maxZ:number;
     private readonly moveDuration:number;
@@ -29,130 +29,6 @@ export default class Menu extends React.Component<MenuProps, MenuState>
         this.moveDuration = .35;
         this.scrollCallback = this.props.scrollCallback;
 
-        const infoTitles =
-        [
-            "Name",
-            "Description",
-            "Platforms",
-            "Role",
-            "Technologies"
-        ];
-
-        this.itemsData =
-        [
-            {
-                thumbId:1,
-                video:"pigs_bricks.mp4",
-                infoTexts:
-                [
-                    "Pigs & Bricks",
-                    "2D Arcade Platforming Game",
-                    "Android, iOS",
-                    "Frontend programming, backend programming",
-                    "Adobe AIR, Actionscript 3, Starling, Spine, Java, SQL"
-                ],
-                infoTitles:infoTitles
-            },
-            {
-                thumbId:2,
-                video:"svara_new_1.mp4",
-                infoTexts:
-                [
-                    "VIP Svara",
-                    "Online Card Game",
-                    "Android, iOS, Web",
-                    "Frontend programming",
-                    "Javascript, PIXI"
-                ],
-                infoTitles:infoTitles
-            },
-            {
-                thumbId:3,
-                video:"domain.mp4",
-                infoTexts:
-                [
-                    "Domain of the Black Stars",
-                    "Solitaire Card Game",
-                    "Web",
-                    "Frontend programming",
-                    "Typescript, PIXI"
-                ],
-                infoTitles:infoTitles
-            },
-            {
-                thumbId:4,
-                infoTexts:
-                [
-                    "Ampslide",
-                    "Web presentation player",
-                    "Web",
-                    "Frontend programming",
-                    "React.js"
-                ],
-                infoTitles:infoTitles
-            },
-            {
-                thumbId:1,
-                infoTexts:
-                [
-                    "Pigs & Bricks",
-                    "2D Arcade Platforming Game",
-                    "",
-                    "Frontend programming, backend programming",
-                    "Actionscript 3, Starling, Spine, Java, SQL"
-                ],
-                infoTitles:infoTitles
-            },
-            {
-                thumbId:1,
-                infoTexts:
-                [
-                    "Pigs & Bricks",
-                    "2D Arcade Platforming Game",
-                    "",
-                    "Frontend programming, backend programming",
-                    "Actionscript 3, Starling, Spine, Java, SQL"
-                ],
-                infoTitles:infoTitles
-            },
-            {
-                thumbId:1,
-                infoTexts:
-                [
-                    "Pigs & Bricks",
-                    "2D Arcade Platforming Game",
-                    "",
-                    "Frontend programming, backend programming",
-                    "Actionscript 3, Starling, Spine, Java, SQL"
-                ],
-                infoTitles:infoTitles
-            },
-            {
-                thumbId:1,
-                infoTexts:
-                [
-                    "Pigs & Bricks",
-                    "2D Arcade Platforming Game",
-                    "",
-                    "Frontend programming, backend programming",
-                    "Actionscript 3, Starling, Spine, Java, SQL"
-                ],
-                infoTitles:infoTitles
-            },
-            {
-                thumbId:1,
-                infoTexts:
-                [
-                    "Pigs & Bricks",
-                    "2D Arcade Platforming Game",
-                    "",
-                    "Frontend programming, backend programming",
-                    "Actionscript 3, Starling, Spine, Java, SQL"
-                ],
-                infoTitles:infoTitles
-            }
-        ];
-
         this.state =
         {
             z:0,
@@ -160,7 +36,7 @@ export default class Menu extends React.Component<MenuProps, MenuState>
             targetZ:0
         };
 
-        this.maxZ = (this.itemsData.length-1) * this.step;
+        this.maxZ = (MenuData.length-1) * this.step;
 
         this.stateClone = {z:0, activeProgress:0, targetZ:0};
 
@@ -180,7 +56,12 @@ export default class Menu extends React.Component<MenuProps, MenuState>
 
     setupEvents()
     {
-        window.addEventListener('resize', () => this.setState(this.stateClone));
+        window.addEventListener('resize',
+        () =>
+        {
+            this.setState(this.stateClone)
+        });
+
         window.addEventListener('wheel', (e:WheelEvent) =>
         {
             TweenMax.killTweensOf(this.stateClone);
@@ -211,7 +92,7 @@ export default class Menu extends React.Component<MenuProps, MenuState>
 
         const touchMoveHandler = (e:TouchEvent) =>
         {
-            const d = Math.round((startTouch.clientY - e.changedTouches[0].clientY) * 10 / window.innerHeight);
+            const d = Math.round((startTouch.clientY - e.changedTouches[0].clientY) * 25 / window.innerHeight);
             this.scrollTo(startTargetZ - d * this.step);
         };
     }
@@ -244,9 +125,9 @@ export default class Menu extends React.Component<MenuProps, MenuState>
     {
         this.items = [];
         this.itemCovers = [];
-        for (let itemIdx=0; itemIdx < this.itemsData.length; itemIdx++)
+        for (let itemIdx=0; itemIdx < MenuData.length; itemIdx++)
         {
-            const itemData = this.itemsData[itemIdx];
+            const itemData = MenuData[itemIdx];
             const camPos = math.matrix([[0, -20, this.state.z]]);
 
             const d = 17;
@@ -371,7 +252,17 @@ export default class Menu extends React.Component<MenuProps, MenuState>
             this.itemCovers.push(cover);
         }
 
-        return (<div style={{ overflow:"hidden" }}>
+        const containerStyle =
+        {
+            overflow:"hidden",
+            width:"100%",
+            height:"100%",
+            backgroundColor:"#00ff00"
+            //background:"linear-gradient(180deg, #12295e 0%, #b43285 100%)"
+        };
+
+        return (<div style={containerStyle}>
+
             {this.items}
             {this.itemCovers}
         </div>);

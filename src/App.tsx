@@ -17,8 +17,6 @@ export default function App()
             }});
     };
 
-    console.log(opacity);
-
     return <div>
         <Menu scrollCallback={scrollCallback}/>
         {opacity > 0 ? <Prompt style={{opacity:opacity}}/> : undefined}
