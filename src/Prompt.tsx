@@ -80,7 +80,7 @@ export default class Prompt extends React.Component<any, any>
 
     componentWillUnmount():void
     {
-        // this.wheelTween.kill();
+        this.wheelTween?.kill();
     }
 
 }

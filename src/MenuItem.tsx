@@ -47,7 +47,6 @@ export default class MenuItem extends React.Component<MenuParams, undefined>
             top:(50 - offsetPercent) + "%",
             left:"50%",
             transform:"translate(-50%,-50%)",
-            zIndex:0,
             height:imgHeight
         };
 
@@ -67,10 +66,6 @@ export default class MenuItem extends React.Component<MenuParams, undefined>
                 onClick={this.onVideoClick.bind(this)}
             />;
         }
-        if (this.video && !showVideo && !this.video.paused)
-        {
-            this.video.pause();
-        }
 
         const infoContainerStyle:CSSProperties =
         {
@@ -81,8 +76,7 @@ export default class MenuItem extends React.Component<MenuParams, undefined>
             color:"#ffffff",
             fontWeight:300,
             fontSize:fontSize,
-            transform:"translate(-50%, 0%)",
-            pointerEvents:"none"
+            transform:"translate(-50%, 0%)"
         };
 
         const tableStyle =
@@ -92,7 +86,7 @@ export default class MenuItem extends React.Component<MenuParams, undefined>
             background: "linear-gradient(180deg, rgba(10,20,30,0.6) 0%, rgba(10,20,30,0) 100%)"
         };
 
-        const infoTable = <table style={tableStyle}>
+        const infoTable = <table style={tableStyle} className="unselectable">
             <tbody style={{}}>
             {
                 this.props.data.infoTitles.map((t:any, index:number) =>

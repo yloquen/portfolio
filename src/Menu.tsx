@@ -5,6 +5,7 @@ import * as math from "mathjs";
 import MenuItem from "./MenuItem";
 import Util from "./util/Util";
 import {MenuData} from "./MenuData";
+import {DebugText} from "./DebugText";
 
 type MenuProps = {scrollCallback:Function}
 type MenuState = {z:number, activeProgress:number, targetZ:number,}
@@ -149,10 +150,10 @@ export default class Menu extends React.Component<MenuProps, MenuState>
             const hMenu = wMenu * .59;
 
             const screenCenterX = 50;
-            const screenCenterY = 50;
+            const screenCenterY = window.innerHeight * .5;
 
             const xMenu = screenCenterX + xp;
-            const yMenu = screenCenterY + yp;
+            const yMenu = screenCenterY + yp * window.innerHeight * 0.01;
 
             let xActive = xMenu;
             let yActive = yMenu;
@@ -160,7 +161,7 @@ export default class Menu extends React.Component<MenuProps, MenuState>
             let wActive = wMenu;
             let hActive = hMenu;
 
-            let zIndex = -itemIdx;
+            let zIndex = 100-itemIdx;
 
             if (itemIdx === this.activeIndex)
             {
@@ -168,7 +169,7 @@ export default class Menu extends React.Component<MenuProps, MenuState>
                 yActive = screenCenterY;
                 wActive = window.innerWidth;
                 hActive = window.innerHeight;
-                zIndex = 1;
+                zIndex = 101;
             }
 
             const oneMinusActProgress = (1 - this.state.activeProgress);
@@ -184,11 +185,9 @@ export default class Menu extends React.Component<MenuProps, MenuState>
                 position:"absolute",
                 width:wFinal,
                 height:hFinal,
-                backgroundColor:"#14295e",
-                // border:"1px solid #ffffff20",
                 background:"linear-gradient(0deg, #7d2e61 0%, #1c294a 100%)",
                 left:xFinal + "%",
-                top:yFinal + "%",
+                top:yFinal + "px",
                 transform:"translate(-50%,-50%)",
                 zIndex:zIndex,
                 cursor:"pointer"
@@ -241,7 +240,7 @@ export default class Menu extends React.Component<MenuProps, MenuState>
                 height:hFinal + "px",
                 backgroundColor:"#12295e",
                 left:xFinal + "%",
-                top:yFinal + "%",
+                top:yFinal + "px",
                 transform:"translate(-50%,-50%)",
                 opacity:coverOpacity,
                 zIndex:zIndex,
@@ -256,13 +255,10 @@ export default class Menu extends React.Component<MenuProps, MenuState>
         {
             overflow:"hidden",
             width:"100%",
-            height:"100%",
-            backgroundColor:"#00ff00"
-            //background:"linear-gradient(180deg, #12295e 0%, #b43285 100%)"
+            height:"100vh"
         };
 
         return (<div style={containerStyle}>
-
             {this.items}
             {this.itemCovers}
         </div>);
