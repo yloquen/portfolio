@@ -11,6 +11,33 @@ export const MenuData =
 [
 
     {
+        thumbId:2,
+        video:"svara_new_1.mp4",
+        infoTexts:
+            [
+                "VIP Svara",
+                "Multiplayer Card Game",
+                "Android, iOS, Web",
+                "Frontend programming",
+                "Javascript, ES6, PIXI"
+            ],
+        infoTitles:infoTitles
+    },
+
+    {
+        thumbId:4,
+        infoTexts:
+            [
+                "Ampslide Player",
+                "Web presentation player",
+                "Web",
+                "Frontend programming",
+                "React.js"
+            ],
+        infoTitles:infoTitles
+    },
+
+    {
         thumbId:1,
         video:"pigs_bricks.mp4",
         infoTexts:
@@ -19,21 +46,22 @@ export const MenuData =
                 "2D Arcade Platforming Game",
                 "Android, iOS",
                 "Frontend programming, backend programming",
-                "Adobe AIR, Actionscript 3, Starling, Spine, Java, SQL"
+                "ActionScript 3, Starling, Spine, Java, SQL"
             ],
         infoTitles:infoTitles
     },
 
+
     {
-        thumbId:2,
-        video:"svara_new_1.mp4",
+        thumbId:10,
+        video:"jewels_wild.mp4",
         infoTexts:
             [
-                "VIP Svara",
-                "Online Card Game",
-                "Android, iOS, Web",
+                "Jewels Wild",
+                "Match 3 Casino Game",
+                "Web",
                 "Frontend programming",
-                "Javascript, PIXI"
+                "Javascript, Phaser"
             ],
         infoTitles:infoTitles
     },
@@ -52,80 +80,121 @@ export const MenuData =
         infoTitles:infoTitles
     },
 
+
     {
-        thumbId:4,
+        thumbId:5,
+        video:"nerdia.mp4",
         infoTexts:
             [
-                "Ampslide",
-                "Web presentation player",
+                "Chronicles of Nerdia",
+                "Casual Social RPG",
                 "Web",
                 "Frontend programming",
-                "React.js"
+                "ActionScript 3, Starling"
             ],
         infoTitles:infoTitles
     },
 
+
     {
-        thumbId:1,
+        thumbId:6,
         infoTexts:
             [
-                "Pigs & Bricks",
-                "2D Arcade Platforming Game",
-                "",
+                "Game Search",
+                "Meta Search Engine",
+                "Web",
                 "Frontend programming, backend programming",
-                "Actionscript 3, Starling, Spine, Java, SQL"
+                "React.js, Node.js"
             ],
         infoTitles:infoTitles
     },
 
+
     {
-        thumbId:1,
+        thumbId:7,
+        video:"quizoff.mp4",
         infoTexts:
             [
-                "Pigs & Bricks",
-                "2D Arcade Platforming Game",
-                "",
-                "Frontend programming, backend programming",
-                "Actionscript 3, Starling, Spine, Java, SQL"
+                "QuizOff",
+                "Multiplayer Trivia Game",
+                "Android, iOS, Web",
+                "Frontend programming",
+                "ActionScript 3, Starling"
             ],
         infoTitles:infoTitles
     },
 
+
     {
-        thumbId:1,
+        thumbId:8,
+        video:"sketchbook.mp4",
         infoTexts:
             [
-                "Pigs & Bricks",
-                "2D Arcade Platforming Game",
-                "",
-                "Frontend programming, backend programming",
-                "Actionscript 3, Starling, Spine, Java, SQL"
+                "MSD Sketchbook",
+                "Medical Assistance App",
+                "Android, iOS, Desktop",
+                "Frontend programming",
+                "Unity, C#"
             ],
         infoTitles:infoTitles
     },
 
+
     {
-        thumbId:1,
+        thumbId:9,
+        video:"witch_hunter.mp4",
         infoTexts:
             [
-                "Pigs & Bricks",
-                "2D Arcade Platforming Game",
-                "",
-                "Frontend programming, backend programming",
-                "Actionscript 3, Starling, Spine, Java, SQL"
+                "Witch Hunter",
+                "Slot Game",
+                "Web",
+                "Frontend programming",
+                "Javascript, Phaser"
             ],
         infoTitles:infoTitles
     },
 
+
     {
-        thumbId:1,
+        thumbId:11,
+        video:"montezuma.mp4",
         infoTexts:
             [
-                "Pigs & Bricks",
-                "2D Arcade Platforming Game",
-                "",
-                "Frontend programming, backend programming",
-                "Actionscript 3, Starling, Spine, Java, SQL"
+                "Montezuma's Treasure",
+                "Slot Game",
+                "Web",
+                "Frontend programming",
+                "Javascript, Phaser"
+            ],
+        infoTitles:infoTitles
+    },
+
+
+    {
+        thumbId:12,
+        video:"pigs.mp4",
+        infoTexts:
+            [
+                "Pis & Bricks",
+                "Slot Game",
+                "Web",
+                "Frontend programming",
+                "Javascript, Phaser"
+            ],
+        infoTitles:infoTitles
+    },
+
+
+    {
+        thumbId:14,
+        video:"okey.mp4",
+        infoTexts:
+            [
+                "Okey Star",
+                "Multiplayer Game",
+                "Web",
+                "Frontend programming, Backend programming",
+                "ActionScript 3, SmartFoxServer, Java, SQL"
             ],
         infoTitles:infoTitles
     }

@@ -76,14 +76,14 @@ export default class MenuItem extends React.Component<MenuParams, undefined>
             color:"#ffffff",
             fontWeight:300,
             fontSize:fontSize,
-            transform:"translate(-50%, 0%)"
+            transform:"translate(-50%, 0%)",
+            background: "linear-gradient(180deg, rgba(10,20,30,0.6) 0%, rgba(10,20,30,0) 100%)"
         };
 
         const tableStyle =
         {
             paddingTop:(fontSize * .5) + "px",
-            width:imgWidth,
-            background: "linear-gradient(180deg, rgba(10,20,30,0.6) 0%, rgba(10,20,30,0) 100%)"
+            width:imgWidth
         };
 
         const infoTable = <table style={tableStyle} className="unselectable">
@@ -100,6 +100,15 @@ export default class MenuItem extends React.Component<MenuParams, undefined>
             </tbody>
         </table>;
 
+        const reflectionStyle:CSSProperties =
+        {
+            position:"absolute",
+            width:imgWidth * 1.11,
+            left:"50%",
+            top:"100%",
+            transform:"translate(-50%, 0%)"
+        };
+
         return (
             <div style={style} onClick={() => this.props.onClickHandler(this.props.index)}>
                 {<img alt="n.a." src={thumbSrc} style={imgStyle}/>}
@@ -107,6 +116,7 @@ export default class MenuItem extends React.Component<MenuParams, undefined>
                 <div style={infoContainerStyle}>
                     {infoTable}
                 </div>
+                <img style={reflectionStyle} alt="" src="./img/item_reflection.png"/>
             </div>);
     }
 

@@ -7,12 +7,20 @@ export default class Prompt extends React.Component<any, any>
     private readonly promptRef:React.RefObject<HTMLImageElement>;
     private readonly wheelRef:React.RefObject<HTMLImageElement>;
     private wheelTween:gsap.core.Tween;
+    private images:any[];
 
     constructor(props:any)
     {
         super(props);
         this.promptRef = React.createRef();
         this.wheelRef = React.createRef();
+        this.images = [];
+
+        const numFrames = 6;
+        for (let frameIdx=1; frameIdx <= numFrames; frameIdx++)
+        {
+            this.images.push(<img alt="" src={"./img/wheel_" + frameIdx + ".png"}/>);
+        }
     }
 
 
@@ -26,6 +34,7 @@ export default class Prompt extends React.Component<any, any>
         {
             const numFrames = 6;
             let frame = 0;
+
             this.wheelTween = TweenMax.to(this.wheelRef.current, .03, {repeat:-1, delay:.5, onRepeat:() =>
                 {
                     const img:HTMLImageElement = this.wheelRef.current;
