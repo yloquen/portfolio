@@ -1,25 +1,41 @@
-import React, {CSSProperties, LegacyRef} from "react";
+import React, {CSSProperties, LegacyRef, RefObject} from "react";
 import Util from "./util/Util";
 import TweenMax from "gsap";
 
 export default class Prompt extends React.Component<any, any>
 {
     private readonly promptRef:React.RefObject<HTMLImageElement>;
-    private readonly wheelRef:React.RefObject<HTMLImageElement>;
     private wheelTween:gsap.core.Tween;
-    private images:any[];
+    private wheelImgs:any[];
+    private wheelImgRefs:React.RefObject<HTMLImageElement>[] | undefined;
 
     constructor(props:any)
     {
         super(props);
         this.promptRef = React.createRef();
-        this.wheelRef = React.createRef();
-        this.images = [];
 
-        const numFrames = 6;
-        for (let frameIdx=1; frameIdx <= numFrames; frameIdx++)
+        if (!Util.isMobile())
         {
-            this.images.push(<img alt="" src={"./img/wheel_" + frameIdx + ".png"}/>);
+            this.wheelImgs = [];
+            this.wheelImgRefs = [];
+
+            const wheelStyle:any =
+            {
+                position:"fixed",
+                bottom: "9vh",
+                left: "67vw",
+                height: "11vh",
+                transform: "translate(-50%, 0%)"
+            };
+
+            for (let imgIdx=1; imgIdx <= 6; imgIdx++)
+            {
+                const ref:React.RefObject<HTMLImageElement> = React.createRef();
+                const s = {};
+                Object.assign(s, wheelStyle);
+                this.wheelImgs.push(<img ref={ref} key={imgIdx} style={s} alt="" src={"./img/wheel_" + imgIdx + ".png"}/>);
+                this.wheelImgRefs.push(ref);
+            }
         }
     }
 
@@ -35,12 +51,16 @@ export default class Prompt extends React.Component<any, any>
             const numFrames = 6;
             let frame = 0;
 
-            this.wheelTween = TweenMax.to(this.wheelRef.current, .03, {repeat:-1, delay:.5, onRepeat:() =>
+            this.wheelTween = TweenMax.to({}, .03, {repeat:-1, onRepeat:() =>
+            {
+                frame = (++frame % numFrames);
+
+                for (let imgIdx = 0; imgIdx < this.wheelImgRefs.length; imgIdx++)
                 {
-                    const img:HTMLImageElement = this.wheelRef.current;
-                    frame = (++frame % numFrames);
-                    img.src = "./img/wheel_" + (1+frame) + ".png";
-                }});
+                    const wheelImgRef = this.wheelImgRefs[imgIdx];
+                    wheelImgRef.current.style.display = imgIdx === frame ? "block" : "none";
+                }
+            }});
         }
     }
 
@@ -60,29 +80,12 @@ export default class Prompt extends React.Component<any, any>
             transform: "translate(-50%, 0%)"
         };
 
-        const wheelStyle:CSSProperties =
-        {
-            position:"fixed",
-            bottom:"9vh",
-            left:"67vw",
-            opacity:this.props.style.opacity,
-            height:"11vh"
-        };
 
-        if (isMobile)
-        {
-            wheelStyle.transform = "translate(-50%, 0%) rotate(180deg)"
-        }
-        else
-        {
-            wheelStyle.transform = "translate(-50%, 0%)"
-        }
 
-        let wheel = isMobile ? undefined : <img ref={this.wheelRef} style={wheelStyle} alt="" src="./img/wheel_1.png"/>;
 
         return (<div>
             <img ref={this.promptRef} style={promptStyle} alt="" src={imgSrc}/>
-            {wheel}
+            {this.wheelImgs}
             </div>);
     }
 

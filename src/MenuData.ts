@@ -197,6 +197,21 @@ export const MenuData =
                 "ActionScript 3, SmartFoxServer, Java, SQL"
             ],
         infoTitles:infoTitles
+    },
+
+
+    {
+        thumbId:13,
+        video:"gun_city.mp4",
+        infoTexts:
+            [
+                "Gun City",
+                "Action Game",
+                "Web",
+                "Frontend programming",
+                "Javascript, Phaser"
+            ],
+        infoTitles:infoTitles
     }
 
 ];
