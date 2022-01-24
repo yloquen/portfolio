@@ -6,6 +6,7 @@ import MenuItem from "./MenuItem";
 import Util from "./util/Util";
 import {MenuData} from "./MenuData";
 import {DebugText} from "./DebugText";
+import LinkTabs from "./LinkTabs";
 
 type MenuProps = {scrollCallback:Function}
 type MenuState = {z:number, activeProgress:number, targetZ:number,}
@@ -261,6 +262,7 @@ export default class Menu extends React.Component<MenuProps, MenuState>
         return (<div style={containerStyle}>
             {this.items}
             {this.itemCovers}
+            <LinkTabs/>
         </div>);
     }
 

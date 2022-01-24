@@ -2,6 +2,7 @@ import React, {useState} from 'react';
 import Menu from "./Menu";
 import Prompt from "./Prompt";
 import TweenMax from "gsap";
+import LinkTabs from "./LinkTabs";
 
 
 export default function App()
