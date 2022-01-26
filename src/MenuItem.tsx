@@ -1,5 +1,6 @@
-import React, {CSSProperties} from "react";
+import React, {CSSProperties, RefObject} from "react";
 import Util from "./util/Util";
+import TweenMax, {Back} from "gsap";
 
 type MenuParams =
 {
@@ -15,6 +16,10 @@ export default class MenuItem extends React.Component<MenuParams, undefined>
     private readonly videoRef:React.RefObject<HTMLVideoElement>;
     private video:HTMLVideoElement;
 
+    private imgRef:RefObject<HTMLImageElement>;
+    private imgBrightness:number;
+    private imgTween:gsap.core.Tween;
+
     constructor(props:undefined)
     {
         super(props);
@@ -24,17 +29,44 @@ export default class MenuItem extends React.Component<MenuParams, undefined>
         style.flexDirection = "column";
 
         this.videoRef = React.createRef();
+        this.imgBrightness = 0;
     }
 
 
     componentDidMount():void
     {
         this.video = this.videoRef.current;
+
+        const img = this.imgRef.current;
+
+        img.addEventListener('mouseenter', e =>
+        {
+            this.imgTween?.kill();
+            this.imgTween = TweenMax.to(this, .3, {imgBrightness:20, onUpdate:() => this.setImgBrightness()});
+        });
+
+        img.addEventListener('mouseleave', e =>
+        {
+            this.imgTween?.kill();
+            this.imgTween = TweenMax.to(this, .3, {imgBrightness:0, onUpdate:() => this.setImgBrightness()});
+        });
+    }
+
+
+    setImgBrightness()
+    {
+        const b = 100 + this.imgBrightness * (1-this.props.activeProgress);
+        if (this.imgRef)
+        {
+            this.imgRef.current.style.filter = "brightness(" + b + "%)" + " saturate(" + b + "%)";
+        }
     }
 
 
     render()
     {
+        this.setImgBrightness();
+
         const style = this.props.style;
         let imgHeight = Math.min(style.height * (1 - this.props.activeProgress * .3), style.width * .5625) *.94;
         let imgWidth = imgHeight * 1.7778;
@@ -77,7 +109,7 @@ export default class MenuItem extends React.Component<MenuParams, undefined>
             fontWeight:300,
             fontSize:fontSize,
             transform:"translate(-50%, 0%)",
-            background: "linear-gradient(180deg, rgba(10,20,30,0.6) 0%, rgba(10,20,30,0) 100%)"
+            background: "linear-gradient(180deg, rgba(10,20,30,0.3) 0%, rgba(10,20,30,0) 100%)"
         };
 
         const tableStyle =
@@ -109,9 +141,11 @@ export default class MenuItem extends React.Component<MenuParams, undefined>
             transform:"translate(-50%, 0%)"
         };
 
+        this.imgRef = React.createRef();
+
         return (
             <div style={style} onClick={() => this.props.onClickHandler(this.props.index)}>
-                {<img alt="n.a." src={thumbSrc} style={imgStyle}/>}
+                {<img alt="n.a." src={thumbSrc} style={imgStyle} ref={this.imgRef}/>}
                 {video}
                 <div style={infoContainerStyle}>
                     {infoTable}
