@@ -12,6 +12,7 @@ export default class Prompt extends React.Component<any, any>
     constructor(props:any)
     {
         super(props);
+
         this.promptRef = React.createRef();
 
         if (!Util.isMobile())
@@ -42,12 +43,18 @@ export default class Prompt extends React.Component<any, any>
 
     componentDidMount():void
     {
+        TweenMax.from(this.promptRef.current, .5, {alpha:0, delay:.5});
         if (Util.isMobile())
         {
             TweenMax.to(this.promptRef.current, 1.5, {bottom:-200, repeat:-1});
         }
         else
         {
+            this.wheelImgRefs.forEach(wi =>
+            {
+                TweenMax.from(wi.current, .5, {alpha:0, delay:.5});
+            });
+
             const numFrames = 6;
             let frame = 0;
 

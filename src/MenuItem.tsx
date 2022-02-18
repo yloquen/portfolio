@@ -1,6 +1,6 @@
 import React, {CSSProperties, RefObject} from "react";
 import Util from "./util/Util";
-import TweenMax, {Back} from "gsap";
+import {TweenMax} from "gsap";
 
 type MenuParams =
 {

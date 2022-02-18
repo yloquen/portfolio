@@ -22,10 +22,13 @@ export default class Menu extends React.Component<MenuProps, MenuState>
     private readonly maxZ:number;
     private readonly moveDuration:number;
     private scrollCallback:Function;
+    private cmpRef:React.RefObject<HTMLDivElement>;
 
     constructor(props:undefined)
     {
         super(props);
+
+        this.cmpRef = React.createRef();
 
         this.step = 60;
         this.moveDuration = .35;
@@ -53,6 +56,12 @@ export default class Menu extends React.Component<MenuProps, MenuState>
         ]);
 
         this.setupEvents();
+    }
+
+
+    componentDidMount():void
+    {
+        TweenMax.from(this.cmpRef.current, .5, {alpha:0, delay:.5});
     }
 
 
@@ -259,7 +268,7 @@ export default class Menu extends React.Component<MenuProps, MenuState>
             height:"100vh"
         };
 
-        return (<div style={containerStyle}>
+        return (<div ref={this.cmpRef} style={containerStyle}>
             {this.items}
             {this.itemCovers}
             <LinkTabs/>
