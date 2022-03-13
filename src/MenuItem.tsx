@@ -85,7 +85,7 @@ export default class MenuItem extends React.Component<MenuParams, undefined>
         const fontSize = Math.min(22, Math.min(window.innerHeight * .03, window.innerWidth * .03));
 
         const showVideo = this.props.activeProgress === 1;
-        const thumbSrc = "./img/thumb_" + this.props.data.thumbId + ".png";
+        const thumbSrc = "./img/thumb_" + this.props.data.thumbId + ".jpg";
 
         let video;
         if (this.props.data.video && showVideo)

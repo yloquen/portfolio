@@ -2,7 +2,6 @@ import React, {useState} from 'react';
 import Menu from "./Menu";
 import Prompt from "./Prompt";
 import TweenMax from "gsap";
-import LinkTabs from "./LinkTabs";
 
 
 export default function App()
@@ -13,9 +12,7 @@ export default function App()
 
     const scrollCallback = () =>
     {
-        TweenMax.to(tweenObj, .25, {opacity:0, onUpdate:() => {
-                setOpacity(tweenObj.opacity);
-            }});
+        TweenMax.to(tweenObj, .25, {opacity:0, onUpdate:() => { setOpacity(tweenObj.opacity); }});
     };
 
     return <div>

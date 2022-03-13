@@ -68,10 +68,10 @@ export const MenuData =
 
     {
         thumbId:3,
-        video:"domain.mp4",
+        video:"eldritch.mp4",
         infoTexts:
             [
-                "Domain of the Black Stars",
+                "Eldritch Dimensions",
                 "Solitaire Card Game",
                 "Web",
                 "Frontend programming",
@@ -175,7 +175,7 @@ export const MenuData =
         video:"pigs.mp4",
         infoTexts:
             [
-                "Pis & Bricks",
+                "Pigs & Bricks",
                 "Slot Game",
                 "Web",
                 "Frontend programming",
