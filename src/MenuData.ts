@@ -25,19 +25,6 @@ export const MenuData =
     },
 
     {
-        thumbId:4,
-        infoTexts:
-            [
-                "Ampslide Player",
-                "Web presentation player",
-                "Web",
-                "Frontend programming",
-                "React.js"
-            ],
-        infoTitles:infoTitles
-    },
-
-    {
         thumbId:1,
         video:"pigs_bricks.mp4",
         infoTexts:
@@ -195,6 +182,20 @@ export const MenuData =
                 "Web",
                 "Frontend programming, Backend programming",
                 "ActionScript 3, SmartFoxServer, Java, SQL"
+            ],
+        infoTitles:infoTitles
+    },
+
+
+    {
+        thumbId:4,
+        infoTexts:
+            [
+                "Ampslide Player",
+                "Web presentation player",
+                "Web",
+                "Frontend programming",
+                "React.js"
             ],
         infoTitles:infoTitles
     },
